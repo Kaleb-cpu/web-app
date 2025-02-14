@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Registration</h1>
+        <form id="studentForm">
+            <div class="input-group">
+                <label for="studentID">Student ID:</label>
+                <input type="text" id="studentID" name="studentID" required>
+            </div>
+            <div class="input-group">
+                <label for="studentName">Student Name:</label>
+                <input type="text" id="studentName" name="studentName" required>
+            </div>
+            <div class="input-group">
+                <label for="course">Course:</label>
+                <input type="text" id="course" name="course" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+
+<script>
+        const form = document.getElementById('studentForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const studentID = document.getElementById('studentID').value;
+            const studentName = document.getElementById('studentName').value;
+            const course = document.getElementById('course').value;
+
+            const studentData = {
+                studentID,
+                studentName,
+                course
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/student', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                const result = await response.json();
+                const messageDiv = document.getElementById('responseMessage');
+                
+                if (response.status === 201) {
+                    messageDiv.textContent = result.message;
+                    messageDiv.style.color = 'green';
+                } else if (response.status === 409) {
+                    // This handles "User already exists" scenario
+                    messageDiv.textContent = result.message || 'Student already exists.';
+                    messageDiv.style.color = 'red';
+                } else if (response.status === 400) {
+                    // This handles validation errors
+                    messageDiv.textContent = result.message || 'Please provide all required fields.';
+                    messageDiv.style.color = 'red';
+                } else {
+                    // Any other error status
+                    messageDiv.textContent = result.message || 'An error occurred. Please try again.';
+                    messageDiv.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('responseMessage').textContent = 'Network error or server issue. Please try again later.';
+                document.getElementById('responseMessage').style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>
