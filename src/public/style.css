@@ -14,12 +14,13 @@ body {
 }
 
 .container {
-    background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: auto;
     text-align: center;
+    display: flex;
+    gap: 5em;
 }
 
 h1 {
