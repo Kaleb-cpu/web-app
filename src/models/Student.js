@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const studentSchema = new mongoose.Schema({
     studentID: { type: String, required: true, unique: true },
     studentName: { type: String, required: true },
-    course: { type: String, required: true },
+    courseName: { type: String, required: true },
     presentDate: { type: Date, required: true }
 });
 

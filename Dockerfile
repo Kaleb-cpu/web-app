@@ -1,20 +1,25 @@
-# Parent image
-FROM node:20-alpine
+# Use a Debian-based Node image so we can install mongosh
+FROM node:20-bullseye
 
-# The working directory in the container
+# Install mongosh (MongoDB Shell)
+RUN apt-get update && apt-get install -y wget gnupg curl \
+ && curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg \
+ && echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" > /etc/apt/sources.list.d/mongodb-org-6.0.list \
+ && apt-get update && apt-get install -y mongodb-mongosh \
+ && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
 WORKDIR /web-app
 
-# Copy package.json and package-lock.json first
+# Copy dependencies and install them
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application files
+# Copy rest of the project files
 COPY . .
 
-# Expose the port the app runs on
+# Expose the port your app runs on
 EXPOSE 3000
 
-# Define the command to run the application
+# Start the app
 CMD ["node", "src/app.js"]
